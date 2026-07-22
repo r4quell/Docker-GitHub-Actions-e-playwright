@@ -28,10 +28,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Instalar browsers do Playwright
-        run: |
-          python -m playwright install --with-deps chromium
-
       - name: Validar sintaxe do projeto (compileall)
         run: |
           python -m compileall -q .

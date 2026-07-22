@@ -1,136 +1,61 @@
-# Auditor de Acessos 
+# Auditor de Acessos
 
-Bot de auditoria de acessos construído em Python sobre o ecossistema
-**BotCity Maestro**, **DataPool** e **Credentials Vault**, agora com:
+Bot corporativo para auditoria de acessos, baseado no fluxo original fornecido:
 
-- ✅ Containerização via Docker / Docker Compose
-- ✅ Pipeline de CI com GitHub Actions
-- ✅ Logs estruturados em JSON com `execution_id` e `bot_id`
-- ✅ Automação web com Playwright usando locators semânticos
+1. O **Dispatcher** lê o CSV e envia os usuários para o DataPool.
+2. O **Performer** consome a fila, valida os dados, consulta as credenciais e registra o resultado.
 
-## Estrutura do projeto
+O projeto pode operar integrado ao **BotCity Maestro**, **DataPool** e **Credentials Vault** ou em modo offline, com fila persistida em `logs/`.
 
-```
+## Estrutura
+
+```text
 .
+├── bot.py                              # regras de validação e auditoria
+├── config.py                           # configuração via .env
+├── dispatcher.py                       # Etapa A: carga da fila
+├── maestro_client.py                   # Maestro, Vault e DataPool/offline
+├── main.py                             # Etapa B: Performer
+├── dados_entrada/usuarios_auditoria.csv
+├── logger_config.py / logger.py        # logs JSON no console e em arquivo
 ├── Dockerfile
-├── .dockerignore
-├── docker-compose.yml
-├── .env
-├── requirements.txt
-├── main.py                # ponto de entrada: auditoria + automação web
-├── logger_config.py        # logging estruturado (JSON) com contexto
-├── web_automation.py        # automação Playwright com locators semânticos
-├── logs/                    # logs persistidos (montado como volume)
-└── .github/workflows/ci.yml # pipeline de integração contínua
+└── docker-compose.yml
 ```
-
-## Pré-requisitos
-
-- Docker e Docker Compose
-- (Para rodar localmente sem Docker) Python 3.11+
 
 ## Configuração
 
-1. Preencha `.env` com as credenciais do BotCity Maestro e demais parâmetros.
+Preencha `.env`. Para testar sem serviços externos, mantenha:
 
-## Executando com Docker
-
-Build da imagem:
-
-```bash
-docker compose build
+```env
+MAESTRO_ENABLED=false
+VAULT_ENABLED=false
 ```
 
-Executar o bot:
+Nesse modo, o DataPool é armazenado em `logs/datapool_FilaAuditoriaRH.json`, e credenciais fictícias são usadas apenas em memória. Senhas não são registradas nos logs.
 
-```bash
-docker compose run bot
-```
+Para integrar ao Maestro, defina `MAESTRO_ENABLED=true`, `VAULT_ENABLED=true`, as credenciais `BOTCITY_MAESTRO_SERVER`, `BOTCITY_MAESTRO_LOGIN` e `BOTCITY_MAESTRO_KEY`, além dos labels de DataPool e Credential Vault.
 
-Isso deve:
-
-- Iniciar o container e executar `main.py`.
-- Gerar logs estruturados em `logs/execucao.log`, visíveis também na
-  máquina host graças ao volume `./logs:/app/logs`.
-
-## Executando localmente (sem Docker)
+## Execução local
 
 ```bash
 python -m venv .venv
-# Linux/macOS
-source .venv/bin/activate
-# Windows (PowerShell)
-.venv\Scripts\Activate.ps1
+# Linux/macOS: source .venv/bin/activate
+# Windows PowerShell: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-python -m playwright install chromium
+
+# Etapa A: carrega dados_entrada/usuarios_auditoria.csv
+python dispatcher.py
+
+# Etapa B: processa os itens da fila
 python main.py
 ```
 
-## Logs estruturados
+O relatório final é salvo em `logs/relatorio_execucao.json`. Itens sem CPF são marcados como erro, mas não interrompem o processamento dos demais itens.
 
-Cada linha do arquivo `logs/execucao.log` é um JSON no formato:
-
-```json
-{
-  "timestamp": "2026-07-22T10:00:00",
-  "level": "INFO",
-  "execution_id": "12345",
-  "bot_id": "auditor001",
-  "message": "Auditoria iniciada"
-}
-```
-
-- `EXECUTION_ID`: definido via variável de ambiente; se ausente, um
-  UUID é gerado automaticamente a cada execução.
-- `BOT_ID`: identifica o bot (padrão: `auditor001`), configurável via `.env`.
-
-## Automação web (Playwright)
-
-O módulo `web_automation.py` implementa o preenchimento de um
-formulário de teste utilizando **locators semânticos**, em vez de
-seletores CSS/XPath frágeis:
-
-```python
-page.get_by_label("Nome").fill("Usuário Teste")
-page.get_by_role("combobox").select_option("opcao1")
-page.get_by_placeholder("Digite seu usuário").fill("teste")
-page.get_by_role("button", name="Enviar").click()
-```
-
-Configure a URL de teste em `PLAYWRIGHT_TARGET_URL` no `.env`.
-
-## CI/CD (GitHub Actions)
-
-O workflow em `.github/workflows/ci.yml` executa a cada push/PR:
-
-1. Checkout do código (`actions/checkout`)
-2. Setup do Python (`actions/setup-python`)
-3. Instalação de dependências (`pip install -r requirements.txt`)
-4. Instalação dos browsers do Playwright
-5. Validação de sintaxe (`compileall`) e testes (`pytest`, se existirem)
-6. Build da imagem Docker
-
-## Branches sugeridas para esta evolução
+## Docker
 
 ```bash
-git checkout -b feature/playwright-web-inicial
-git checkout -b feature/refatoracao-locators
+docker compose build
+docker compose run bot python dispatcher.py
+docker compose run bot
 ```
-
-> Neste pacote de entrega, a automação web já foi implementada
-> diretamente com locators semânticos, unificando as etapas 4 e 5 da
-> especificação original. Ao aplicar ao repositório real, você pode
-> distribuir os commits entre as duas branches acima conforme sua
-> convenção de versionamento.
-
-## Checklist de entrega
-
-- [x] Dockerfile funcional
-- [x] .dockerignore configurado
-- [x] docker-compose.yml funcionando
-- [x] Logs persistidos no host
-- [x] Workflow GitHub Actions criado
-- [x] Logs estruturados com execution_id e bot_id
-- [x] Automação Playwright funcionando
-- [x] Locators semânticos implementados
-- [x] README atualizado com instruções de execução

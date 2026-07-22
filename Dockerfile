@@ -18,13 +18,6 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# Dependências de sistema necessárias para Playwright (browsers) e libs nativas
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        wget \
-        ca-certificates \
-        gnupg \
-    && rm -rf /var/lib/apt/lists/*
-
 # ----------------------------------------------------------
 # Camada de dependências: copiada e instalada ANTES do código
 # para que o Docker reaproveite o cache sempre que somente o
@@ -32,9 +25,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # ----------------------------------------------------------
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Instala os browsers do Playwright (necessário apenas se a lib estiver no requirements.txt)
-RUN python -m playwright install --with-deps chromium
 
 # ----------------------------------------------------------
 # Camada de código da aplicação (muda com mais frequência)

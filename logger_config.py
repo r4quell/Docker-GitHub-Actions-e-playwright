@@ -26,7 +26,9 @@ from dotenv import load_dotenv
 # No Docker, as variáveis já são injetadas pelo compose e têm precedência.
 load_dotenv()
 
-LOG_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs")
+LOG_DIR = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), os.getenv("LOGS_DIR", "logs")
+)
 LOG_FILE = os.path.join(LOG_DIR, "execucao.log")
 
 # EXECUTION_ID: se não vier definido via variável de ambiente (ex: injetado
