@@ -1,0 +1,36 @@
+# Ambientes virtuais
+.venv/
+venv/
+env/
+
+# Cache Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.mypy_cache/
+.pytest_cache/
+
+# Controle de versão / CI
+.git/
+.github/
+
+# Logs e dados gerados em runtime
+logs/
+*.log
+
+# Segredos e configuração local
+.env
+.env.*
+*.pem
+*.key
+
+# Artefatos de IDE / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Playwright
+playwright-report/
+test-results/

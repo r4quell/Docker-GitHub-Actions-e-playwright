@@ -1,0 +1,10 @@
+# --- Ecossistema BotCity ---
+botcity-framework-core
+botcity-maestro-sdk
+
+# --- Logging estruturado ---
+python-json-logger
+python-dotenv
+
+# --- Automação web ---
+playwright
