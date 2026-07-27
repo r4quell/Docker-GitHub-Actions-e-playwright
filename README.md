@@ -1,4 +1,4 @@
-# Auditor de Acessos
+# Auditor de Acessos V2 com Selenium
 
 Bot corporativo para auditoria de acessos, baseado no fluxo original fornecido:
 
@@ -6,6 +6,9 @@ Bot corporativo para auditoria de acessos, baseado no fluxo original fornecido:
 2. O **Performer** consome a fila, valida os dados, consulta as credenciais e registra o resultado.
 
 O projeto pode operar integrado ao **BotCity Maestro**, **DataPool** e **Credentials Vault** ou em modo offline, com fila persistida em `logs/`.
+
+## Tecnologia
+Para a automaização web, utilizou-se selenium
 
 ## Estrutura
 
