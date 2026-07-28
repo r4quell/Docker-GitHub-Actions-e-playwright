@@ -2,41 +2,66 @@
 
 # ============================================================
 # Auditor de Acessos v1.0 - Dockerfile
-# Imagem base oficial do Python (slim para reduzir superfície e tamanho)
+# Imagem Python preparada para automação Selenium com Chrome
 # ============================================================
 FROM python:3.11-slim
 
-# Metadados da imagem
 LABEL maintainer="Equipe de Hyperautomation" \
-      description="Auditor de Acessos - BotCity Maestro / DataPool / Credentials Vault"
+      description="Auditor de Acessos - Selenium / BotCity Maestro / DataPool / Credentials Vault"
 
-# Evita geração de arquivos .pyc e garante logs sem buffer (aparecem em tempo real)
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    CHROME_BIN=/usr/bin/google-chrome
 
 WORKDIR /app
 
-# ----------------------------------------------------------
-# Camada de dependências: copiada e instalada ANTES do código
-# para que o Docker reaproveite o cache sempre que somente o
-# código da aplicação mudar (e não o requirements.txt).
-# ----------------------------------------------------------
+# Dependências necessárias para o Google Chrome e execução headless do Selenium.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget \
+    ca-certificates \
+    gnupg \
+    fonts-liberation \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libc6 \
+    libcairo2 \
+    libcups2 \
+    libdbus-1-3 \
+    libdrm2 \
+    libgbm1 \
+    libglib2.0-0 \
+    libgtk-3-0 \
+    libnspr4 \
+    libnss3 \
+    libu2f-udev \
+    libvulkan1 \
+    libx11-6 \
+    libx11-xcb1 \
+    libxcb1 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxext6 \
+    libxfixes3 \
+    libxrandr2 \
+    xdg-utils \
+    && wget -q -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && apt-get install -y --no-install-recommends /tmp/google-chrome.deb \
+    && rm -f /tmp/google-chrome.deb \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# ----------------------------------------------------------
-# Camada de código da aplicação (muda com mais frequência)
-# ----------------------------------------------------------
 COPY . .
 
-# Diretório de logs (persistido via volume no docker-compose)
 RUN mkdir -p /app/logs
 
-# Variáveis de contexto padrão (podem ser sobrescritas em runtime via --env ou .env)
 ENV BOT_ID="auditor001" \
     EXECUTION_ID=""
 
-# Comando padrão de execução do bot
+# Selenium executa o Chrome em modo headless quando iniciado no container.
 CMD ["python", "main.py"]
