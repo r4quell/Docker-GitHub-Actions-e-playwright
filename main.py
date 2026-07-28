@@ -1,4 +1,4 @@
-"""Etapa B: Performer que consome e audita os itens do DataPool."""
+"""Etapa B: Performer que consome e audita os itens do DataPool com Selenium."""
 
 import json
 import sys
@@ -55,7 +55,7 @@ class ExecutionResult:
 def main() -> int:
     ensure_dirs()
     maestro = MaestroClient()
-    maestro.log("Iniciando auditoria de acessos")
+    maestro.log("Iniciando auditoria de acessos com Selenium")
 
     try:
         usuario_erp = maestro.get_credential(CREDENTIAL_LABEL, "username")
@@ -74,15 +74,15 @@ def main() -> int:
         item_data = {key: item.get(key) for key in ("cpf", "nome", "sistema")}
         try:
             auditar_usuario(item_data, usuario_erp, senha_erp)
-            item.report(status="DONE", message="Auditado com sucesso")
+            item.report(status="DONE", message="Auditado com sucesso via Selenium")
             result.registrar_sucesso()
-            logger.info("Item auditado com sucesso: %s (%s)", item_data["nome"], item_data["cpf"])
+            logger.info("Item auditado com sucesso via Selenium: %s (%s)", item_data["nome"], item_data["cpf"])
         except ValidationError as error:
             item.report(status="ERROR", message=str(error))
             result.registrar_erro(item_data, str(error))
             logger.error("Erro de validação no item %s: %s", item_data, error)
         except Exception as error:  # noqa: BLE001
-            message = f"Erro inesperado: {error}"
+            message = f"Erro inesperado na automação Selenium: {error}"
             item.report(status="ERROR", message=message)
             result.registrar_erro(item_data, message)
             logger.exception("Erro inesperado ao processar o item %s", item_data)
@@ -97,7 +97,7 @@ def main() -> int:
         status=final_status,
         message=f"{result.total_sucesso} sucesso(s), {result.total_erro} erro(s)",
     )
-    logger.info("Execução concluída: %s", result.to_dict())
+    logger.info("Execução Selenium concluída: %s", result.to_dict())
     return 0
 
 
