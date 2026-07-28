@@ -5,9 +5,8 @@ usando Selenium para abrir o ERP, realizar login e pesquisar o CPF de cada item
 recebido da fila.
 """
 
-import time
-
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -30,17 +29,28 @@ def validar_item(item_data: dict) -> str:
     return cpf
 
 
+def criar_driver() -> webdriver.Chrome:
+    """Cria o Chrome preparado para execução local e em Docker/CI."""
+    options = Options()
+    options.add_argument("--headless=new")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=1920,1080")
+
+    service = Service(ChromeDriverManager().install())
+    return webdriver.Chrome(service=service, options=options)
+
+
 def acessar_erp(usuario: str, senha: str) -> webdriver.Chrome:
     """Abre o navegador e executa o login no sistema.
 
-    Observação:
-    - Troque a URL e os seletores abaixo pelos elementos reais da atividade.
-    - A senha não é exibida em logs.
+    Troque a URL e os seletores abaixo pelos elementos reais da atividade.
+    A senha nunca é exibida em logs.
     """
     logger.info("Acessando sistema com o usuário: %s", usuario)
 
-    service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service)
+    driver = criar_driver()
     wait = WebDriverWait(driver, 15)
 
     try:
@@ -54,7 +64,6 @@ def acessar_erp(usuario: str, senha: str) -> webdriver.Chrome:
         campo_senha.send_keys(senha)
         botao_entrar.click()
 
-        time.sleep(1)
         return driver
     except Exception:
         driver.quit()
@@ -66,7 +75,7 @@ def auditar_usuario(item_data: dict, usuario_erp: str, senha_erp: str) -> dict:
 
     Etapas realizadas:
     1. Valida o CPF.
-    2. Abre o ERP.
+    2. Abre o Chrome com Selenium.
     3. Faz login.
     4. Pesquisa o CPF no sistema.
     5. Retorna o resultado da auditoria.
@@ -83,8 +92,6 @@ def auditar_usuario(item_data: dict, usuario_erp: str, senha_erp: str) -> dict:
 
         botao_buscar = wait.until(EC.element_to_be_clickable((By.ID, "btn-search")))
         botao_buscar.click()
-
-        time.sleep(1)
 
         return {
             "cpf": cpf,
