@@ -1,0 +1,39 @@
+name: Selenium - Docker e CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  selenium:
+    name: Teste da automação Selenium
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar Google Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      - name: Instalar dependências Python
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Validar importação do Selenium
+        run: |
+          python -c "from selenium import webdriver; from webdriver_manager.chrome import ChromeDriverManager; print('Selenium instalado com sucesso')"
+
+      - name: Validar Dockerfile
+        run: docker build --tag auditor-acessos:ci .
