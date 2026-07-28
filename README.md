@@ -698,8 +698,10 @@ A utilização de Docker permite reproduzir o ambiente necessário para execuç�
 
 ---
 
-## 25. Autoria
+## 25. integrantes
 
 **Raquel Andrade**
+**Gustavo Nunes**
+**Carlos Eduardo**
 
 Projeto desenvolvido para fins acadêmicos, com foco em automação de processos, Selenium WebDriver, Python, Docker, GitHub Actions e BotCity Maestro.
