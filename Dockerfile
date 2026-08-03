@@ -1,19 +1,20 @@
 # syntax=docker/dockerfile:1
 
 # ============================================================
-# Auditor de Acessos v1.0 - Dockerfile
-# Imagem Python preparada para automação Selenium com Chrome
+# Cadastro de Lotes - Dockerfile
+# Imagem Python preparada para Selenium, POM e BotCity
 # ============================================================
 FROM python:3.11-slim
 
 LABEL maintainer="Equipe de Hyperautomation" \
-      description="Auditor de Acessos - Selenium / BotCity Maestro / DataPool / Credentials Vault"
+      description="Cadastro de Lotes - Selenium / POM / BotCity / DataPool"
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    CHROME_BIN=/usr/bin/google-chrome
+    CHROME_BIN=/usr/bin/google-chrome \
+    APP_HEADLESS=true
 
 WORKDIR /app
 
@@ -58,10 +59,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN mkdir -p /app/logs
-
-ENV BOT_ID="auditor001" \
-    EXECUTION_ID=""
+RUN mkdir -p /app/logs /app/evidencias
 
 # Selenium executa o Chrome em modo headless quando iniciado no container.
 CMD ["python", "main.py"]

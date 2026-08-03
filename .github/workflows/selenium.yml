@@ -2,7 +2,7 @@ name: Selenium - Docker e CI
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "feature/**"]
   pull_request:
     branches: ["main"]
   workflow_dispatch:
@@ -36,4 +36,4 @@ jobs:
           python -c "from selenium import webdriver; from webdriver_manager.chrome import ChromeDriverManager; print('Selenium instalado com sucesso')"
 
       - name: Validar Dockerfile
-        run: docker build --tag auditor-acessos:ci .
+        run: docker build --tag cadastro-lotes-pom:ci .
