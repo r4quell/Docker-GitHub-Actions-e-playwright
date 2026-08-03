@@ -149,12 +149,72 @@ python main.py
 
 ## Testes
 
+Antes da primeira execução, instale as dependências Python e o navegador do
+Playwright e crie o arquivo de configuração local:
+
 ```powershell
-pytest
+pip install -r requirements.txt
+playwright install chromium
+Copy-Item .env.example .env
 ```
 
-O teste integrado abre o Portal Fake em modo headless, processa todos os itens
-e valida o resumo, o resultado do DataPool, as screenshots e o arquivo de log.
+### Teste automatizado
+
+Para testar as implementações Selenium e Playwright, além da geração de
+screenshots, logs e registros no DataPool, execute na raiz do projeto:
+
+```powershell
+pytest -q
+```
+
+Resultado esperado:
+
+```text
+2 passed
+```
+
+Os testes integrados abrem o Portal Fake em modo headless, processam todos os
+itens e validam o resumo, o resultado do DataPool, as screenshots e o arquivo
+de log nas duas tecnologias.
+
+### Teste manual com Selenium
+
+```powershell
+$env:APP_TECNOLOGIA="selenium"
+$env:APP_HEADLESS="true"
+python main.py
+```
+
+### Teste manual com Playwright
+
+```powershell
+$env:APP_TECNOLOGIA="playwright"
+$env:APP_HEADLESS="true"
+python main.py
+```
+
+Em ambas as execuções, o resultado esperado é:
+
+```text
+Resumo
+Itens processados: 3
+Sucesso: 3
+Erro: 0
+```
+
+Para acompanhar a automação com a janela do navegador visível, altere o modo
+headless antes de executar:
+
+```powershell
+$env:APP_HEADLESS="false"
+python main.py
+```
+
+Após a execução, confira os artefatos gerados:
+
+- screenshots em `evidencias/`;
+- log estruturado em `logs/execucao.log`;
+- DataPool atualizado em `logs/datapool_resultado.json`.
 
 ## DataPool
 
