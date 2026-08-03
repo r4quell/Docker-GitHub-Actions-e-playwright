@@ -1,21 +1,16 @@
-version: "3.9"
-
 services:
   bot:
     build:
       context: .
       dockerfile: Dockerfile
-    image: auditor-acessos:latest
-    container_name: auditor-acessos
+    image: cadastro-lotes-pom:latest
+    container_name: cadastro-lotes-pom
     env_file:
       - .env
     environment:
-      # Sobrescreve/complementa o .env; útil para gerar um execution_id único por execução
-      - EXECUTION_ID=${EXECUTION_ID:-local-dev}
-      - BOT_ID=${BOT_ID:-auditor001}
+      - APP_HEADLESS=true
     volumes:
       # Persistência dos logs no host
       - ./logs:/app/logs
-      # (Opcional) útil se precisar montar dados/DataPool locais durante testes
-      # - ./data:/app/data
+      - ./evidencias:/app/evidencias
     restart: "no"

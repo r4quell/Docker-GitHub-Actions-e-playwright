@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portal de Cadastro de Lotes</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="container">
+    <section id="pagina_login" class="card">
+      <h1>Portal de Lotes</h1>
+      <p>Entre para acessar o cadastro.</p>
+
+      <form id="form_login">
+        <label for="user-name">Usuário</label>
+        <input id="user-name" name="usuario" required>
+
+        <label for="password">Senha</label>
+        <input id="password" name="senha" type="password" required>
+
+        <button id="login-button" type="submit">Entrar</button>
+        <p id="mensagem_login" class="erro" role="alert"></p>
+      </form>
+    </section>
+
+    <section id="pagina_formulario" class="card" hidden>
+      <h1>Cadastro de lote</h1>
+
+      <form id="form_lote">
+        <label for="numero_lote">Número do lote</label>
+        <input id="numero_lote" name="numero_lote" required>
+
+        <label for="produto">Produto</label>
+        <select id="produto" name="produto" required>
+          <option value="">Selecione</option>
+          <option>Produto A</option>
+          <option>Produto B</option>
+          <option>Produto C</option>
+        </select>
+
+        <label for="status">Status</label>
+        <select id="status" name="status" required>
+          <option value="">Selecione</option>
+          <option>Ativo</option>
+          <option>Pendente</option>
+          <option>Bloqueado</option>
+        </select>
+
+        <button id="btn_enviar" type="submit">Cadastrar lote</button>
+        <p id="mensagem_sucesso" class="sucesso" role="status" hidden>
+          Lote cadastrado com sucesso!
+        </p>
+      </form>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

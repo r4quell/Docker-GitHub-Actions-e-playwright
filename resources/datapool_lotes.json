@@ -1,0 +1,20 @@
+[
+  {
+    "id": "item001",
+    "numero_lote": "LOTE-FICTICIO-001",
+    "produto": "Produto A",
+    "status": "Ativo"
+  },
+  {
+    "id": "item002",
+    "numero_lote": "LOTE-FICTICIO-002",
+    "produto": "Produto B",
+    "status": "Pendente"
+  },
+  {
+    "id": "item003",
+    "numero_lote": "LOTE-FICTICIO-003",
+    "produto": "Produto C",
+    "status": "Bloqueado"
+  }
+]

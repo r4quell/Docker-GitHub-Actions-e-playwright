@@ -4,6 +4,16 @@ __pycache__/
 *.pyc
 .env
 logs/*.log
+logs/
+evidencias/
+logs/*.csv
+evidencias/*.csv
+*.png
+*.jpg
+*.jpeg
+*.log
+*.db
+*.zip
 playwright-report/
 test-results/
 .pytest_cache/
